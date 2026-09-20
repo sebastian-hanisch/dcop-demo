@@ -1,4 +1,4 @@
-# Distributed Constraint Optimization (DPOP) an der Kran-Auftragsvergabe – Streamlit-Demo
+# Distributed Constraint Optimization (DCOP), gelöst mit DPOP, an der Kran-Auftragsvergabe – Streamlit-Demo
 
 Drittes Stück der "Konzepte"-Reihe für die Website "Sebastian Hanisch – Operations
 Research und Machine Learning", **Multi-Agenten-Koordinations-Linie** - ein
@@ -11,15 +11,20 @@ gmm-demo/spectral-demo als unabhängige Zweige ab kmeans-demo).
 - **contract-net-demo**: Unwiderruflichkeit - nie Revision nach Zuschlag.
 - **task-swap-demo**: selbst mit voller Information kann eine auf paarweise
   Tausche beschränkte lokale Suche im lokalen Optimum steckenbleiben.
-- **dcop-demo**: **DPOP ist exakt** - löst sein eigenes Modell beweisbar
-  optimal über verteilte dynamische Programmierung auf einem Pseudo-Baum,
-  kein Steckenbleiben möglich. Und verfehlt den echten Makespan trotzdem oft,
-  aus einem völlig anderen Grund: DPOP kann nur SUMMEN-zerlegbare Ziele lösen,
-  Makespan ist ein MAXIMUM - also optimiert DPOP ein bewusst gewähltes
-  Summen-Surrogat exakt, das nicht dasselbe Ziel wie der echte Makespan ist.
-  Eine **Modellierungslücke**, orthogonal zu beiden Vorgänger-Schwächen (DPOP
-  hat volle Information UND durchsucht erschöpfend - trotzdem kann es
-  schlechter als das naive, myopische Contract-Net-Ergebnis abschneiden).
+- **dcop-demo**: **DCOP** ist die Problemklasse (Variablen, Domänen, Summe
+  lokaler Kosten), **DPOP** (Distributed Pseudotree Optimization Procedure,
+  Petcu & Faltings 2005) ein **exakter** Löser dafür - beweisbar optimal über
+  verteilte dynamische Programmierung auf einem Pseudo-Baum, kein
+  Steckenbleiben möglich. Und verfehlt den echten Makespan trotzdem oft, aus
+  einem völlig anderen Grund: ein DCOP minimiert eine SUMME von Unär- und
+  Paarkosten, der echte Makespan (Maximum über Agenten, je eine
+  reihenfolgeabhängige Summe über alle ihre Aufträge) lässt sich so nicht
+  ausdrücken - also modelliert das DCOP ein bewusst gewähltes Summen-Surrogat,
+  das DPOP exakt löst, das aber nicht dasselbe Ziel wie der echte Makespan
+  ist. Eine **Modellierungslücke** (Modell, nicht Löser), orthogonal zu beiden
+  Vorgänger-Schwächen (DPOP hat volle Information UND durchsucht erschöpfend -
+  trotzdem kann es schlechter als das naive, myopische Contract-Net-Ergebnis
+  abschneiden).
   Empirisch schlägt DPOP das rohe CNP-Ergebnis in etwa der Hälfte aller
   Instanzen - kein Randfall, siehe `tests/test_dcop_evaluation.py::
   test_dpop_vs_cnp_can_be_positive_and_negative`.
@@ -34,7 +39,7 @@ Makespan-Berechnung über das unveränderte `cn_schedule.schedule_from_assignmen
 - **Unärkosten**: `unary(j,a) = travel_time(agent_a_start, job_j.position) + job_j.duration`.
 - **Paarkosten** (jedes Auftragspaar): `0` bei verschiedenen Agenten, sonst
   die (reihenfolge-unabhängige) Distanz zwischen den beiden Aufträgen.
-- **DPOPs eigenes Ziel**: `Σ unary + Σ_{i<j} pairwise` über einen
+- **DCOP-Ziel**: `Σ unary + Σ_{i<j} pairwise` über einen
   VOLLSTÄNDIGEN Constraint-Graphen - absichtlich, das lässt DPOPs eigene
   Schwäche (Tabellengröße) sofort und drastisch sichtbar werden.
 
@@ -44,9 +49,9 @@ Separator ist immer `{0,...,j-1}`, Tabellengröße `n_agents^j` - bei
 `n_agents=4, n_jobs=8` erreicht die letzte Tabelle 16.384 Einträge.
 
 **Zwei getrennte Vergleiche**, nie vermischt:
-1. *Rechnet DPOP sein eigenes Ziel richtig?* - gegen Brute-Force über
+1. *Löst DPOP das DCOP richtig?* (Frage an den Löser) - gegen Brute-Force über
    dasselbe Summen-Ziel (`correctness_gap`, sollte immer ≈0 sein).
-2. *Ist DPOPs eigenes Ziel dasselbe wie der echte Makespan?* - DPOPs
+2. *Ist das DCOP-Ziel dasselbe wie der echte Makespan?* (Frage ans Modell) - DPOPs
    Zuteilung wird in einen echten Zeitplan übersetzt und gegen CP-SATs
    echtes Optimum UND das rohe CNP-Ergebnis verglichen (`makespan_gap`,
    `dpop_vs_cnp`) - die eigentliche, oft erhebliche Lücke.

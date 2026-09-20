@@ -1,9 +1,9 @@
 """Zwei getrennte, beide wichtige Vergleiche:
 
-1. Rechnet DPOP sein eigenes (Summen-)Ziel richtig? -> gegen Brute-Force über
+1. Löst DPOP das DCOP-(Summen-)Ziel richtig? -> gegen Brute-Force über
    dasselbe Ziel (`correctness_gap`, sollte immer ~0 sein - ein Fehlschlag
    wäre ein echter Implementierungsfehler, keine Modellierungs-Aussage).
-2. Ist DPOPs eigenes Ziel dasselbe wie der echte Makespan? -> DPOPs Zuteilung
+2. Ist das DCOP-Ziel dasselbe wie der echte Makespan? -> DPOPs Zuteilung
    wird über `schedule_from_assignment` (aufsteigend nach Auftrags-Index,
    exakt wie bei Contract Net/Task-Swap-Verhandlung) in einen echten Zeitplan
    übersetzt und gegen das zentrale CP-SAT-Optimum UND das rohe Contract-Net-

@@ -4,9 +4,13 @@ modelliert (wie bei der Task-Swap-Verhandlung: Eigentümerschaft getrennt von
 Reihenfolge) - die echte Makespan-Berechnung übernimmt unverändert
 `cn_schedule.schedule_from_assignment` (aufsteigend nach Auftrags-Index).
 
-DPOP/Max-Sum können nur SUMMEN-zerlegbare Ziele lösen, Makespan ist ein MAX -
-deshalb optimiert DPOP hier ein bewusst gewähltes Summen-Surrogat, nicht den
-Makespan direkt:
+Ein DCOP ist per Definition die Minimierung einer SUMME lokaler Kosten
+(Unär- und Paarkosten). Der echte Makespan lässt sich so nicht ausdrücken: die
+Fertigstellungszeit eines Krans hängt von ALLEN seinen Aufträgen und deren
+Reihenfolge ab (eine n-stellige, keine unäre/paarweise Funktion), und darüber
+liegt noch ein Maximum über die Krane. Deshalb modelliert dieses DCOP ein
+bewusst gewähltes Summen-Surrogat statt des Makespans direkt (DPOP löst dieses
+Modell dann exakt):
 
 - Unärkosten: wie teuer wäre es, wenn AGENT a Auftrag j ALLEIN übernimmt -
   dieselbe Formel wie ein einzelnes Contract-Net-Gebot.
@@ -15,8 +19,8 @@ Makespan direkt:
   Zusatzkosten, wenn derselbe Agent beide übernimmt.
 
 Der Graph ist bewusst VOLLSTÄNDIG (jedes Auftragspaar hat eine Paarkosten-
-Kante) - das ist genau das, was DPOPs eigene Schwäche (Tabellengröße) sofort
-und drastisch zeigt, siehe cn_dpop.py."""
+Kante) - das ist genau das, was die Schwäche des Lösers DPOP (Tabellengröße)
+sofort und drastisch zeigt, siehe dcop_dpop.py."""
 
 
 def unary_cost(instance, job_index, agent_id):

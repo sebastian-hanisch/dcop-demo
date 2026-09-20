@@ -1,5 +1,6 @@
-"""DPOP (Dynamic Programming Optimization Protocol) über den vollständigen
-Constraint-Graphen aus `dcop_graph.py`. Der Pseudo-Baum EINES vollständigen
+"""DPOP (Distributed Pseudotree Optimization Procedure, Petcu & Faltings 2005) -
+ein EXAKTER Löser für DCOPs - angewandt auf das DCOP aus `dcop_graph.py`
+(vollständiger Constraint-Graph). Der Pseudo-Baum EINES vollständigen
 Graphen entartet immer zu einer Kette (Tiefensuche hat nie einen Grund
 zurückzuspringen - jeder unbesuchte Knoten ist Nachbar): Auftrag 0 ist die
 Wurzel, Auftrag n-1 das Blatt, und Auftrag k's Separator (seine Vorfahren)
@@ -20,7 +21,7 @@ bereits fixierten Werten seiner Vorfahren entspricht.
 
 Tie-Break: Agenten-IDs aufsteigend durchlaufen, nur bei echter Verbesserung
 (striktes <) aktualisieren - das deckt sich exakt mit einer Brute-Force-
-Enumeration in `itertools.product`-Reihenfolge (siehe cn_dpop_bruteforce.py)."""
+Enumeration in `itertools.product`-Reihenfolge (siehe dcop_bruteforce.py)."""
 
 from dataclasses import dataclass
 from itertools import product

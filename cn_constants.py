@@ -1,4 +1,4 @@
-"""Defaults, Slider-Grenzen und Presets für die DCOP/DPOP-Demo.
+"""Defaults, Slider-Grenzen und Presets für die DCOP-Demo (Löser: DPOP).
 Szenario-Konstanten (Zeilen bis ORTOOLS_TIME_LIMIT_SECONDS) sind größtenteils
 wortgleich aus contract-net-demo übernommen - dasselbe Vehikel, siehe project
 memory - bis auf N_JOBS_MAX, das hier bewusst enger ist (siehe unten)."""
@@ -10,7 +10,7 @@ DEFAULT_TRAVEL_TIME_PER_UNIT = 1.0
 DEFAULT_SEED = 7
 
 # N_JOBS_MAX bewusst 8 statt des Root-Werts 16: DPOPs UTIL-Tabellengröße wächst
-# als n_agents**job_index (vollständiger Constraint-Graph, siehe cn_dpop.py) -
+# als n_agents**job_index (vollständiger Constraint-Graph, siehe dcop_dpop.py) -
 # bei n_agents=4 wäre 4**15 ≈ 1.07 Mrd. Tabelleneinträge am oberen Ende
 # unrealistisch. Bei N_JOBS_MAX=8 bleibt der Worst Case 4**7=16384 - spürbar,
 # aber interaktiv, und zeigt das Wachstum über 5 Größenordnungen hinweg.
@@ -28,8 +28,8 @@ SPIKE_MULTIPLIER = 4.0
 ORTOOLS_TIME_LIMIT_SECONDS = 10.0
 
 # Ab welcher Makespan-Lücke (DPOP-Makespan vs. CP-SAT-echtes-Optimum) die
-# Kernaussage-Sektion die Modellierungslücke ("DPOP löst das falsche Ziel
-# exakt") als Hauptaussage zeigt - höchste Priorität in der Verdict-Kaskade.
+# Kernaussage-Sektion die Modellierungslücke ("das DCOP-Modell hat das falsche
+# Ziel, DPOP löst es exakt") als Hauptaussage zeigt - höchste Priorität in der Verdict-Kaskade.
 MAKESPAN_GAP_WARNING_THRESHOLD_PCT = 40.0
 
 # Ab welcher relativen Abweichung (in beide Richtungen) "DPOP vs. rohes CNP"
@@ -63,14 +63,14 @@ PRESETS = {
 }
 
 PRESET_HELP = {
-    "Surrogat trifft fast genau": "DPOPs Summen-Surrogat trifft hier fast genau "
+    "Surrogat trifft fast genau": "Das Summen-Surrogat des DCOP trifft hier fast genau "
         "den echten Makespan - und schlägt auch das rohe Contract-Net-Ergebnis.",
     "Surrogat hilft deutlich": "Das Surrogat senkt den Makespan fast auf die "
         "Hälfte des rohen CNP-Ergebnisses, mit kleiner Restlücke zum echten Optimum.",
     "Surrogat schadet leicht": "Exakt für das eigene (Summen-)Ziel heißt nicht "
         "'hilft der echten Kennzahl' - hier schneidet DPOP leicht schlechter ab "
         "als das naive Contract Net.",
-    "Surrogat-Lücke eklatant": "Die Kernaussage: DPOP löst sein eigenes Modell "
+    "Surrogat-Lücke eklatant": "Die Kernaussage: DPOP löst das DCOP-Modell "
         "exakt und verfehlt den echten Makespan trotzdem um mehr als das Doppelte.",
     "Tabellen-Explosion": "Regler-Maximum: die letzte UTIL-Tabelle hat 16384 "
         "Einträge - und der Makespan liegt trotzdem weit vom Optimum entfernt.",

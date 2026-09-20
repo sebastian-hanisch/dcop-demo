@@ -1,14 +1,14 @@
 """
-Distributed Constraint Optimization (DPOP) an der Kran-Auftragsvergabe –
-interaktive Konzept-Demo
+Distributed Constraint Optimization (DCOP), gelöst mit DPOP, an der
+Kran-Auftragsvergabe – interaktive Konzept-Demo
 Sebastian Hanisch - Operations Research und Machine Learning
 
 Drittes Stück der "Konzepte"-Reihe, Multi-Agenten-Koordinations-Linie - ein
 UNABHÄNGIGER Zweig direkt vom Contract-Net-Protocol-Root (contract-net-demo),
-keine Fortsetzung von task-swap-demo. DPOP löst sein eigenes (Summen-
-zerlegbares) Modell über verteilte dynamische Programmierung EXAKT - und
-verfehlt den echten Makespan trotzdem oft, weil dieses Modell nur ein
-Surrogat für den echten (nicht summen-zerlegbaren) Makespan ist.
+keine Fortsetzung von task-swap-demo. DCOP ist die Problemklasse, DPOP ein
+EXAKTER Löser dafür (verteilte dynamische Programmierung). DPOP löst das hier
+modellierte DCOP beweisbar optimal - und verfehlt den echten Makespan trotzdem
+oft, weil das DCOP-Modell nur ein Summen-Surrogat für den echten Makespan ist.
 
 Lauffähig mit: streamlit run app.py
 """
@@ -39,7 +39,7 @@ from dcop_visualization import (
     describe_value_step,
 )
 
-st.set_page_config(page_title="DPOP/DCOP – Sebastian Hanisch", layout="wide")
+st.set_page_config(page_title="DCOP (DPOP) – Sebastian Hanisch", layout="wide")
 
 
 @st.cache_data(show_spinner=False)
@@ -61,23 +61,25 @@ def _compute_comparison(n_jobs, n_agents, duration_variability, travel_time_per_
     return full_comparison(instance, time_limit_seconds=C.ORTOOLS_TIME_LIMIT_SECONDS)
 
 
-st.title("🧩 Distributed Constraint Optimization (DPOP) an der Kran-Auftragsvergabe")
+st.title("🧩 Distributed Constraint Optimization (DCOP) an der Kran-Auftragsvergabe")
 st.markdown(
     """
 Ein **unabhängiger Zweig** direkt vom Contract-Net-Protocol-Root
-(**contract-net-demo**), keine Fortsetzung von task-swap-demo. **DPOP**
-(Dynamic Programming Optimization Protocol) löst sein eigenes Modell über
-verteilte dynamische Programmierung **beweisbar exakt** - anders als die
-Task-Swap-Verhandlung kann DPOP nie im lokalen Optimum steckenbleiben. Und
-verfehlt den echten Makespan trotzdem oft, aus einem völlig anderen Grund:
-sein eigenes Modell ist nur ein Surrogat für das, was wir eigentlich wollen.
+(**contract-net-demo**), keine Fortsetzung von task-swap-demo. **DCOP** ist
+die *Problemklasse* (Variablen, Domänen, Kostenfunktionen, verteilt auf
+Agenten), **DPOP** (Distributed Pseudotree Optimization Procedure) ein
+*Löser* dafür: verteilte dynamische Programmierung, **beweisbar exakt** -
+anders als die Task-Swap-Verhandlung kann DPOP nie im lokalen Optimum
+steckenbleiben. Und verfehlt den echten Makespan trotzdem oft, aus einem
+völlig anderen Grund: das hier modellierte DCOP ist nur ein Surrogat für das,
+was wir eigentlich wollen.
 """
 )
 st.caption(
     "Contract Net (online, keine Rücksicht auf spätere Aufträge) und "
     "Task-Swap-Verhandlung (offline, aber nur lokale Suche) hatten je eine "
     "klare eigene Schwäche. DPOP hat WEDER von beidem - volle Information UND "
-    "erschöpfende Suche über sein eigenes Modell - und kann trotzdem "
+    "erschöpfende Suche über das DCOP - und kann trotzdem "
     "schlechter abschneiden als das naive Contract-Net-Ergebnis."
 )
 
@@ -88,23 +90,40 @@ with st.expander("Wie funktioniert diese Demo?", expanded=True):
 Aufträge werden einzeln angekündigt, das niedrigste Gebot gewinnt, endgültig.
 Dient hier nur als Vergleichs-Basislinie, nicht als Ausgangspunkt für DPOP.
 
-**Die DCOP-Formulierung**: eine Variable PRO AUFTRAG (nicht pro Agent) -
-`x_j ∈ {Agent 0, ..., Agent k-1}`, welcher Agent Auftrag `j` übernimmt. Die
+**Zwei Ebenen, nicht eine**: Ein **DCOP** ist das *Modell* - Variablen, Domänen
+und eine Summe lokaler Kostenfunktionen. **DPOP** ist der *Löser*, der genau
+dieses Modell exakt minimiert. Die Modellierungsentscheidungen (Variablen,
+Kosten, Graph) stecken im DCOP; Pseudo-Baum, UTIL-/VALUE-Phase und
+Tabellengröße gehören zu DPOP. Ein anderer Löser (z.B. Max-Sum, DSA) würde
+dasselbe DCOP-Modell mit denselben Modellgrenzen lösen - nur mit anderen
+Stärken und Schwächen beim Lösen selbst.
+
+**Das DCOP-Modell**: eine Variable PRO AUFTRAG (nicht pro Agent) -
+`x_j ∈ {Agent 0, ..., Agent k-1}`, welcher Agent (Kran) Auftrag `j` übernimmt.
+Achtung, zwei Bedeutungen von "Agent": in dieser Demo (wie in der ganzen
+Reihe) ist ein Agent ein Kran; im DCOP-Formalismus heißt "Agent" dagegen der
+Besitzer einer Variable - hier also der Auftrag. Die Krane sind die *Werte*
+der Domäne. Die
 Reihenfolge innerhalb eines Agenten wird bewusst NICHT modelliert (genau wie
 bei der Task-Swap-Verhandlung: Eigentümerschaft getrennt von Reihenfolge,
-aufsteigend nach Auftrags-Index). DPOP kann nur Ziele lösen, die sich als
-SUMME lokaler Kosten zerlegen lassen - der echte Makespan ist aber ein
-MAXIMUM, kein Summe. Deshalb optimiert DPOP ein bewusst gewähltes
-Summen-Surrogat: **Unärkosten** (wie teuer wäre Auftrag `j` für Agent `a`
-allein) plus **Paarkosten** für JEDES Auftragspaar (0, falls verschiedene
-Agenten; sonst die Distanz zwischen den beiden Aufträgen - eine reihenfolge-
-unabhängige Näherung der Zusatzkosten, wenn derselbe Agent beide übernimmt).
+aufsteigend nach Auftrags-Index).
+
+**Warum ein Summen-Surrogat**: Ein DCOP minimiert per Definition eine SUMME
+von Unär- und Paarkosten. Der echte Makespan lässt sich so nicht ausdrücken:
+die Fertigstellungszeit eines Agenten hängt von ALLEN seinen Aufträgen und
+deren Reihenfolge ab (eine n-stellige Funktion, keine unäre oder paarweise),
+und darüber liegt noch ein Maximum über die Agenten. Deshalb modelliert dieses
+DCOP ein bewusst gewähltes Surrogat: **Unärkosten** (wie teuer wäre Auftrag
+`j` für Agent `a` allein) plus **Paarkosten** für JEDES Auftragspaar (0, falls
+verschiedene Agenten; sonst die Distanz zwischen den beiden Aufträgen - eine
+reihenfolge-unabhängige Näherung der Zusatzkosten, wenn derselbe Agent beide
+übernimmt).
 
 **Warum der Graph vollständig ist**: jedes Auftragspaar bekommt eine
-Paarkosten-Kante, absichtlich - das lässt DPOPs eigene Schwäche (siehe unten)
+Paarkosten-Kante, absichtlich - das lässt die Schwäche von DPOP (siehe unten)
 sofort und drastisch sichtbar werden, statt sie künstlich zu vermeiden.
 
-**Der Pseudo-Baum entartet zu einer Kette**: eine Tiefensuche auf einem
+**DPOP: der Pseudo-Baum entartet zu einer Kette**: eine Tiefensuche auf einem
 vollständigen Graphen hat nie einen Grund zurückzuspringen - jeder noch nicht
 besuchte Auftrag ist ja ohnehin Nachbar. Auftrag 0 wird zur Wurzel, Auftrag
 `n-1` zum Blatt, und Auftrag `j`s "Separator" (seine Vorfahren) ist immer
@@ -126,12 +145,12 @@ dieselbe Tabellierung wie in dynamic-programming-demo - nur VERTEILT: jeder
 Auftrag berechnet und sendet nur seine eigene Tabelle, nie die volle gemeinsame.
 
 **Zwei getrennte Fragen, nicht eine**:
-- *Rechnet DPOP sein eigenes Ziel richtig?* → Vergleich gegen eine
+- *Löst DPOP das DCOP richtig?* (Frage an den Löser) → Vergleich gegen eine
   erschöpfende Brute-Force-Suche über dasselbe Summen-Ziel. Sollte IMMER
   ≈0 sein - ein Fehlschlag wäre ein echter Implementierungsfehler.
-- *Ist DPOPs eigenes Ziel dasselbe wie der echte Makespan?* → Vergleich der
-  aus DPOPs Zuteilung abgeleiteten echten Zeitplanung gegen das zentrale
-  CP-SAT-Optimum. Das ist die eigentliche, oft erhebliche Lücke.
+- *Ist das DCOP-Ziel dasselbe wie der echte Makespan?* (Frage ans Modell) →
+  Vergleich der aus DPOPs Zuteilung abgeleiteten echten Zeitplanung gegen das
+  zentrale CP-SAT-Optimum. Das ist die eigentliche, oft erhebliche Lücke.
 
 **Keine bewiesene Reihenfolge**: anders als bei task-swap-demos
 `ALG ≥ LS ≥ OPT` gibt es hier KEINE Garantie, dass DPOP mindestens so gut wie
@@ -341,18 +360,18 @@ st.markdown("---")
 
 # --- Vergleich ---------------------------------------------------------------
 
-st.subheader("📐 Löst DPOP das richtige Problem?")
+st.subheader("📐 Ist das DCOP das richtige Problem?")
 
-st.markdown("**Frage 1: Rechnet DPOP sein eigenes Ziel richtig?**")
+st.markdown("**Frage 1 (Löser): Löst DPOP das DCOP richtig?**")
 correctness_delta = cmp["correctness_gap"]
 st.metric(
-    "DPOP-Ziel vs. Brute-Force (dasselbe Summen-Ziel)", f"{cmp['dpop_total_cost']:.2f}",
+    "DCOP-Ziel: DPOP vs. Brute-Force", f"{cmp['dpop_total_cost']:.2f}",
     delta=f"{correctness_delta:+.6f}" if abs(correctness_delta) >= 1e-6 else "±0.000000",
     delta_color="off",
     help="Sollte IMMER ≈0 sein - das beweist die Implementierung, nicht nur die Algorithmus-Behauptung.",
 )
 
-st.markdown("**Frage 2: Ist DPOPs eigenes Ziel dasselbe wie der echte Makespan?**")
+st.markdown("**Frage 2 (Modell): Ist das DCOP-Ziel dasselbe wie der echte Makespan?**")
 vc1, vc2, vc3 = st.columns(3)
 vc1.metric("Contract Net (roh)", f"{cmp['cnp_makespan']:.1f} min")
 
@@ -385,17 +404,18 @@ if cmp["makespan_gap_pct"] is not None:
 
     if cmp["makespan_gap_pct"] >= C.MAKESPAN_GAP_WARNING_THRESHOLD_PCT:
         st.warning(
-            f"⚠️ **Modellierungslücke**: DPOP hat sein eigenes Summen-Ziel exakt gelöst (siehe Frage 1 oben), "
+            f"⚠️ **Modellierungslücke**: DPOP hat das DCOP exakt gelöst (siehe Frage 1 oben), "
             f"verfehlt den echten Makespan aber um **{cmp['makespan_gap_pct']:.1f}%**. Das liegt NICHT an "
             f"eingeschränkter Kommunikation oder Suche (DPOP hatte volle Information und hat erschöpfend "
-            f"gesucht) - sondern daran, dass Makespan ein Maximum ist und DPOP nur ein Summen-Surrogat "
-            f"lösen kann."
+            f"gesucht) - sondern am DCOP-Modell: ein DCOP minimiert eine Summe von Unär- und Paarkosten, "
+            f"der echte Makespan (Maximum über Agenten, je eine reihenfolgeabhängige Summe) lässt sich so "
+            f"nur als Surrogat abbilden."
         )
     elif cmp["dpop_vs_cnp_pct"] >= C.DPOP_VS_CNP_NOTABLE_PCT:
         st.warning(
             f"⚠️ DPOP schneidet hier **{cmp['dpop_vs_cnp_pct']:.1f}% schlechter** ab als das naive, "
-            f"myopische Contract-Net-Ergebnis - überraschend, aber kein Fehler: exakt für das eigene "
-            f"Ziel zu sein garantiert nicht, dass dieses Ziel dem tatsächlichen Makespan entspricht."
+            f"myopische Contract-Net-Ergebnis - überraschend, aber kein Fehler: das DCOP exakt zu lösen "
+            f"garantiert nicht, dass sein Ziel dem tatsächlichen Makespan entspricht."
         )
     elif cmp["dpop_vs_cnp_pct"] <= -C.DPOP_VS_CNP_NOTABLE_PCT:
         st.success(
@@ -423,17 +443,17 @@ $$
 \text{pairwise}(i, j, a, b) = \begin{cases} 0 & a \neq b \\ |q_i - q_j| \cdot \tau & a = b \end{cases}
 $$
 
-**DPOPs eigenes Ziel** (vollständiger Graph, jedes Paar zählt):
+**DCOP-Ziel** (vollständiger Graph, jedes Paar zählt):
 
 $$
 \text{objective}(x) = \sum_j \text{unary}(j, x_j) + \sum_{i<j} \text{pairwise}(i,j,x_i,x_j)
 $$
 
-**Separator-Formel**: auf der (aus dem vollständigen Graphen erzwungenen)
+**Separator-Formel (DPOP)**: auf der (aus dem vollständigen Graphen erzwungenen)
 Ketten-Struktur ist Auftrag $j$s Separator $\{0,\dots,j-1\}$, Tabellengröße
 $n_{\text{agents}}^{\,j}$.
 
-**UTIL-Rekursion**: für Auftrag $j$ mit Separator-Belegung $s=(x_0,\dots,x_{j-1})$
+**UTIL-Rekursion (DPOP)**: für Auftrag $j$ mit Separator-Belegung $s=(x_0,\dots,x_{j-1})$
 und (falls vorhanden) Kind-Tabelle $U_{j+1}$:
 
 $$
@@ -442,7 +462,7 @@ $$
 
 (für das Blatt entfällt der letzte Term, für die Wurzel ist $s=()$).
 
-**VALUE-Rekursion**: $x_0 = \arg\min U_0(())$; für $j>0$: $x_j$ = das im UTIL-Schritt
+**VALUE-Rekursion (DPOP)**: $x_0 = \arg\min U_0(())$; für $j>0$: $x_j$ = das im UTIL-Schritt
 festgehaltene Optimum von $U_j$ an der Stelle $(x_0,\dots,x_{j-1})$.
 
 **Tie-Break**: Agenten-IDs aufsteigend, nur bei striktem `<` aktualisieren - deckt
