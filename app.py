@@ -164,7 +164,7 @@ PRESET_HELP = C.PRESET_HELP
 preset_cols = st.columns(len(C.PRESETS))
 for i, name in enumerate(C.PRESETS.keys()):
     with preset_cols[i]:
-        st.button(name, use_container_width=True, on_click=apply_preset, args=(name,), help=PRESET_HELP[name])
+        st.button(name, width="stretch", on_click=apply_preset, args=(name,), help=PRESET_HELP[name])
 
 st.caption(
     "🔗 Die Adresszeile oben spiegelt Ihre aktuelle Konfiguration wider – einfach kopieren, "
@@ -192,7 +192,7 @@ with st.sidebar:
 
     st.button(
         "🎲 Neue Instanz generieren",
-        use_container_width=True,
+        width="stretch",
         on_click=randomize_seed,
         help="Würfelt einen neuen Zufalls-Seed für Auftragspositionen und -dauern.",
     )
@@ -225,7 +225,7 @@ with step_col:
     else:
         step = st.slider("Schritt (Auftragsvergabe)", 0, max_step, key="cn_step")
 with play_col:
-    auto_play_cnp = st.button("▶️ Abspielen", use_container_width=True, key="cnp_play")
+    auto_play_cnp = st.button("▶️ Abspielen", width="stretch", key="cnp_play")
 
 chart_col, bid_col = st.columns([3, 2])
 schedule_slot = chart_col.empty()
@@ -235,11 +235,11 @@ bid_slot = bid_col.empty()
 def _render_cnp(current_step):
     schedule_slot.plotly_chart(
         build_schedule_figure(instance, cnp_result, current_step, ortools_makespan),
-        use_container_width=True, key=f"cnp_schedule_{current_step}",
+        width="stretch", key=f"cnp_schedule_{current_step}",
     )
     bid_slot.plotly_chart(
         build_bid_chart(cnp_result.steps[current_step]),
-        use_container_width=True, key=f"cnp_bids_{current_step}",
+        width="stretch", key=f"cnp_bids_{current_step}",
     )
 
 
@@ -275,7 +275,7 @@ with util_step_col:
     else:
         util_step = st.slider("Schritt (UTIL-Berechnung)", 0, util_max_step, key="util_step")
 with util_play_col:
-    auto_play_util = st.button("▶️ Abspielen", use_container_width=True, key="util_play")
+    auto_play_util = st.button("▶️ Abspielen", width="stretch", key="util_play")
 
 util_chart_slot = st.empty()
 util_caption_slot = st.empty()
@@ -285,7 +285,7 @@ def _render_util(s):
     job_index = instance.n_jobs - 1 - s
     table = dpop_result.util_tables[job_index]
     fig, n_truncated = build_util_step_bar(table)
-    util_chart_slot.plotly_chart(fig, use_container_width=True, key=f"util_{s}")
+    util_chart_slot.plotly_chart(fig, width="stretch", key=f"util_{s}")
     size = util_table_size(instance.n_agents, job_index)
     trunc_note = f" (nur die ersten 16 von {size:,} Einträgen angezeigt)" if n_truncated else ""
     util_caption_slot.caption(
@@ -302,7 +302,7 @@ else:
     _render_util(util_step)
 
 st.plotly_chart(
-    build_util_table_size_chart(instance, cmp["util_table_sizes"]), use_container_width=True, key="util_size_chart",
+    build_util_table_size_chart(instance, cmp["util_table_sizes"]), width="stretch", key="util_size_chart",
 )
 st.caption(
     f"Größte Tabelle: **{max(cmp['util_table_sizes']):,} Einträge** bei nur {instance.n_jobs} Aufträgen - "
@@ -326,7 +326,7 @@ with value_step_col:
     else:
         value_step = st.slider("Schritt (VALUE-Entscheidung)", 0, value_max_step, key="value_step")
 with value_play_col:
-    auto_play_value = st.button("▶️ Abspielen", use_container_width=True, key="value_play")
+    auto_play_value = st.button("▶️ Abspielen", width="stretch", key="value_play")
 
 value_chart_slot = st.empty()
 value_caption_slot = st.empty()
@@ -343,7 +343,7 @@ def _render_value(s):
     schedules = _partial_schedules(s)
     value_chart_slot.plotly_chart(
         build_dcop_schedule_figure(instance, schedules, ortools_makespan, highlight_jobs=frozenset({s})),
-        use_container_width=True, key=f"value_{s}",
+        width="stretch", key=f"value_{s}",
     )
     value_caption_slot.caption(f"Schritt {s + 1}: " + describe_value_step(s, dpop_result.assignment[s]))
 
