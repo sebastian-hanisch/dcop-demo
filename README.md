@@ -25,9 +25,14 @@ gmm-demo/spectral-demo als unabhängige Zweige ab kmeans-demo).
   Vorgänger-Schwächen (DPOP hat volle Information UND durchsucht erschöpfend -
   trotzdem kann es schlechter als das naive, myopische Contract-Net-Ergebnis
   abschneiden).
-  Empirisch schlägt DPOP das rohe CNP-Ergebnis in etwa der Hälfte aller
-  Instanzen - kein Randfall, siehe `tests/test_dcop_evaluation.py::
-  test_dpop_vs_cnp_can_be_positive_and_negative`.
+  Empirisch schlägt DPOP das rohe CNP-Ergebnis nur auf einem Teil der
+  Instanzen und verliert auf einem anderen - kein Randfall, aber je nach
+  Einstellung sehr unterschiedlich: auf 30 festen Held-out-Instanzen (n=8…12,
+  k=3…4) liegen die Gewinne bei etwa 27–50 %, die Verluste bei etwa 47–70 %,
+  im Mittel ist der Fahrzeug-DPOP 5–19 % schlechter als Contract Net (gemessen
+  in ladcop-demo). Siehe
+  `tests/test_dcop_evaluation.py::test_dpop_vs_cnp_can_be_positive_and_negative`
+  für die Regression, dass beide Richtungen vorkommen.
 
 ## Die DCOP-Formulierung
 
