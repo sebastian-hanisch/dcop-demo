@@ -1,5 +1,7 @@
 # Distributed Constraint Optimization (DCOP), gelöst mit DPOP, an der Kran-Auftragsvergabe – Streamlit-Demo
 
+**[→ Demo live ausprobieren](https://sebastianhanisch-dcop-demo.streamlit.app/)**
+
 Drittes Stück der "Konzepte"-Reihe für die Website "Sebastian Hanisch – Operations
 Research und Machine Learning", **Multi-Agenten-Koordinations-Linie** - ein
 **unabhängiger Zweig** direkt vom [contract-net-demo](../contract-net-demo)-Root,
