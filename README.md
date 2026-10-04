@@ -29,10 +29,11 @@ gmm-demo/spectral-demo als unabhängige Zweige ab kmeans-demo).
   abschneiden).
   Empirisch schlägt DPOP das rohe CNP-Ergebnis nur auf einem Teil der
   Instanzen und verliert auf einem anderen - kein Randfall, aber je nach
-  Einstellung sehr unterschiedlich: auf 30 festen Held-out-Instanzen (n=8…12,
-  k=3…4) liegen die Gewinne bei etwa 27–50 %, die Verluste bei etwa 47–70 %,
+  Einstellung sehr unterschiedlich: auf festen Held-out-Instanzen (n=8…12,
+  k=3…4; ladcop-demo, 20 Instanzen je Einstellung) liegen die Gewinne bei etwa 27–50 %, die Verluste bei etwa 47–70 %,
   im Mittel ist der Fahrzeug-DPOP 5–19 % schlechter als Contract Net (gemessen
-  in ladcop-demo). Siehe
+  in ladcop-demo; eine Nachmessung mit dem DPOP dieser Demo, Streuung 0,4, Reisezeit 1,2,
+  20 Instanzen je (n, k) ohne n=12/k=4: Gewinne 20–40 %, Verluste 40–75 %, Mittel 6–14 % schlechter). Siehe
   `tests/test_dcop_evaluation.py::test_dpop_vs_cnp_can_be_positive_and_negative`
   für die Regression, dass beide Richtungen vorkommen.
 
