@@ -33,7 +33,7 @@ gmm-demo/spectral-demo als unabhängige Zweige ab kmeans-demo).
   k=3…4; ladcop-demo, 20 Instanzen je Einstellung) liegen die Gewinne bei etwa 27–50 %, die Verluste bei etwa 47–70 %,
   im Mittel ist der Fahrzeug-DPOP 5–19 % schlechter als Contract Net (gemessen
   in ladcop-demo; eine Nachmessung mit dem DPOP dieser Demo, Streuung 0,4, Reisezeit 1,2,
-  20 Instanzen je (n, k) ohne n=12/k=4: Gewinne 20–40 %, Verluste 40–75 %, Mittel 6–14 % schlechter). Siehe
+  20 Instanzen je (n, k) ohne n=12/k=4: Gewinne 20–40 %, Verluste 40–75 %, Mittel: Makespan 6–14 % über dem von Contract Net). Siehe
   `tests/test_dcop_evaluation.py::test_dpop_vs_cnp_can_be_positive_and_negative`
   für die Regression, dass beide Richtungen vorkommen.
 
